@@ -923,8 +923,96 @@ sudo docker service ps mysql
 
 ---
 
+當然可以！以下是**你在 Cloud9 或任何本地端開發環境中**，從初始化 Git、加入 `.gitignore`、提交並推送到 GitHub 的**完整正確流程與說明**，建議你可以加入 `README.md` 中的 `## Git 操作流程` 區段使用。
 
+---
 
+## ✅ 建議加入 `README.md` 的內容範例
+
+````markdown
+## Git 操作流程說明（含 .gitignore）
+
+以下為將本專案透過 Git 推送至 GitHub 公開倉庫的正確操作步驟：
+
+### 🧱 1. 初始化 Git 專案
+
+```bash
+git init
+````
+
+這會在目錄中建立 `.git/` 資料夾，讓你開始版本控制。
+
+---
+
+### 📂 2. 建立 `.gitignore`（⚠️ 在第一次 commit 前一定要加）
+
+```bash
+cat <<EOF > .gitignore
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.lock.hcl
+*.pem
+*.zip
+*.log
+EOF
+```
+
+這樣可避免將 Terraform 執行檔、憑證、暫存等敏感或大檔案加入 Git。
+
+---
+
+### 📝 3. 新增 GitHub 遠端連結
+
+若你使用 SSH 模式，請確認你已將 SSH key 加入 GitHub：
+
+```bash
+git remote add origin git@github.com:<your-account>/<your-repo>.git
+```
+
+例如：
+
+```bash
+git remote add origin git@github.com:haha1811/aws-docker-swarm-terraform.git
+```
+
+---
+
+### ✅ 4. 加入所有檔案並提交
+
+```bash
+git add .
+git commit -m "Initial commit: Terraform Docker Swarm setup"
+```
+
+---
+
+### ☁️ 5. 推送到 GitHub 並建立追蹤關係
+
+```bash
+git push --set-upstream origin main
+```
+
+之後即可直接用 `git push` 推送、`git pull` 拉取。
+
+---
+
+### 👤 6. （可選）設定 Git 使用者資訊
+
+如果尚未設定過，請加上：
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+
+---
+
+這份流程確保：
+
+* Terraform 不會不小心將 `.terraform/` 加入 Git
+* Git 能正確追蹤並連結 GitHub 倉庫
+* 同步與更新流程簡單、穩定
 
 
 ---
