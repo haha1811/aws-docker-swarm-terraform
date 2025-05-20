@@ -327,6 +327,20 @@ resource "aws_security_group" "swarm_sg" {
     protocol    = "-1"             # ✅ 允許 all traffic
     cidr_blocks = ["10.0.0.0/16"]  # ✅ 僅限內部私有網段
   }
+  
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"             # ✅ 允許 all traffic
+    cidr_blocks = ["210.64.53.104/32"]  # ✅ 僅限內部私有網段
+  }
+  
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"             # ✅ 允許 all traffic
+    cidr_blocks = ["210.64.53.104/32"]  # ✅ 僅限內部私有網段
+  }
 
   egress {
     from_port   = 0
@@ -681,6 +695,16 @@ services:
       - "80:80"
 ```
 
+#### 對應指令
+```bash=
+sudo docker service create \
+  --name web \
+  --replicas 3 \
+  --constraint 'node.role == worker' \
+  --publish 80:80 \
+  <manager-private-ip>:5000/myapp
+```
+
 #### 部署：
 
 ```bash
@@ -872,6 +896,27 @@ sudo curl -s http://10.0.1.207:5000/v2/ap-image/tags/list | python3 -m json.tool
 
 ## ✅ 修改後的指令如下：
 
+### 建置 swarm network
+```bash
+sudo docker network create -d overlay mynet
+```
+
+### 查看目前 docker network
+```bash
+sudo docker network ls
+```
+
+### 建置 docker volume
+```bash
+sudo docker volume create data
+```
+
+### 查看 docker volume
+```bash
+sudo docker volume ls
+```
+
+### MySQL service 
 ```bash
 sudo docker service create \
   --name mysql \
@@ -879,6 +924,36 @@ sudo docker service create \
   -p 3306:3306 \
   -e MYSQL_ROOT_PASSWORD=Dev12876266 \
   10.0.1.207:5000/mysql-image:latest
+```
+
+### Web service 
+```bash=
+sudo docker service create \
+  --name web \
+  --network mynet \
+  --replicas 3 \
+  -p 80:80 \
+  10.0.1.161:5000/web-image
+```
+
+### AP service 
+```bash=
+sudo docker service create \
+  --name ap \
+  --network mynet \
+  --replicas 2 \
+  -p 8080:8080 \
+  10.0.1.161:5000/ap-image
+```
+
+### 查看service執行狀況
+```bash
+sudo docker service ls
+```
+
+### 查看MySQL分配在哪台主機上執行
+```bash
+sudo docker service ps mysql
 ```
 
 ---
